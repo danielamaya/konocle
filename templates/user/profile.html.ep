@@ -1,0 +1,99 @@
+% layout 'default';
+% title 'Profile of user';
+
+<div class="row">
+    <!-- Begin User Link Area -->
+    <div class="col-md-10">
+        <ul class="nav nav-tabs" data-toggle="tabs">
+            <li class="active"><a href="#example-tabs-home"><i class="icon-share-alt"></i> Submitted</a></li>
+            <li><a href="#example-tabs-profile"><i class="icon-heart"></i> Loved</a></li>
+            <li><a href="#example-tabs-messages"><i class="icon-bookmark"></i> Saved</a></li>
+            <li><a href="#example-tabs-options"><i class="icon-comment"></i> Comments</a></li>
+            <li><a href="#example-tabs-options"><i class="icon-cog"></i> Settings</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="example-tabs-home">
+                <div style="background-image: url(/img/heart.png); background-size:60px 60px; background-repeat:no-repeat; height: 60px; width: 60px; padding:40px 0 0 12px;">
+                    <span class="badge badge-danger">50</span>
+                </div>
+            </div>
+            <div class="tab-pane" id="example-tabs-profile">Profile Content..</div>
+            <div class="tab-pane" id="example-tabs-messages">Messages Content..</div>
+            <div class="tab-pane" id="example-tabs-options">Options Content..</div>
+            <div class="tab-pane" id="example-tabs-options">Settings Content..</div>
+        </div>
+    </div>
+
+    <!-- Begin User Profile Area -->
+    <div class="col-md-2 text-center">
+        <div class="block block-themed">
+            <div class="block-title"><h4>Submitted Links</h4></div>
+            <div class="block-content full"><span class="badge badge-success">16</span></div>
+        </div>
+        <div class="block block-themed">
+            <div class="block-title"><h4>Love</h4></div>
+            <div class="block-content full"><span class="badge badge-danger">169</span></div>
+        </div>
+        <div class="block block-themed">
+            <div class="block-title"><h4>Achievments</h4></div>
+            <div class="block-content full"><img src="/img/heart.png" height="70px" width="70px" /></div>
+        </div>
+        <div class="block block-themed">
+            <div class="block-title"><h4>Tags</h4></div>
+            <div class="block-content full">tag cloud</div>
+        </div>
+    </div>
+</div>
+
+%= include 'footer';
+%= include 'common_js';
+
+<!-- Javascript code only for this page -->
+<script>
+    $(function() {
+        // $("#yourFormId").validate({
+        //     rules: {
+        //         email: {
+        //             required: true,
+        //             email: true,
+        //             remote: {
+        //                 url: "checkUnameEmail.php",
+        //                 type: "post"
+        //              }
+        //         }
+        //     },
+        //     messages: {
+        //         email: {
+        //             required: "Please Enter Email!",
+        //             email: "This is not a valid email!",
+        //             remote: "Email already in use!"
+        //         }
+        //     }
+        // });
+        var tagApi = jQuery("#tags").tagsManager();
+        jQuery("#tags").typeahead({
+            name: 'tags',
+            limit: 15,
+            valueKey: 'tag_name',
+            remote: "/autocomplete?term=%QUERY"
+        }).on('typeahead:selected', function (e, d) {
+            //console.log(e);
+            //console.log(d);
+            $("#tags").val("");
+            tagApi.tagsManager("pushTag", d.value);
+        });
+        $('.tt-hint').css('top','50px');
+
+        $('#description').focusout(function(){
+            var words = $(this).val().split(" ");
+            for ( i = 0; i < words.length; i++ ) {
+                var word = words[i].toLowerCase();
+                $.getJSON( "/get_tag_name?term=" + word, function (data) {
+                    $.each( data, function( key, val ) {
+                        tagApi.tagsManager("pushTag", val.tag_name);
+                    });
+                });
+            }
+        });
+    });
+</script>

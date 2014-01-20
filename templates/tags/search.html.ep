@@ -1,0 +1,26 @@
+% layout 'default';
+% title 'Tag Search';
+<h2><%= $msg %></h2>
+<form name="tagSearch">
+  Tag: <input type="text" name="tag" id="tag" />
+</form>
+
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<script type="text/javascript">
+$(function() {
+  $("#tag").autocomplete({
+    source: "<%== url_for 'autocomplete' %>",
+    minLength: 2,
+    select: function( event, ui ) {
+          $( "#tag" ).val( ui.item.tag_name );
+          return false;
+        }
+    }).data( "uiAutocomplete" )._renderItem = function( ul, item ) {
+        return $( "<li></li>" )
+        .data( "item.autocomplete", item )
+        .append( "<a><strong>" + item.tag_name + "</strong>" )
+        .appendTo( ul );
+      };
+});
+</script>

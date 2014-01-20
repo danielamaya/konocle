@@ -1,0 +1,12 @@
+<!-- Excanvas for Flot (Charts plugin) support on IE8 -->
+<!--[if lte IE 8]><script src="js/helpers/excanvas.min.js"></script><![endif]-->
+
+%= javascript '/js/vendor/jquery-1.9.1.min.js'
+%= javascript '/js/vendor/jqueryui-1.10.3.min.js'
+
+<!-- Bootstrap.js -->
+%= javascript '/js/vendor/bootstrap.min.js'
+
+<!-- Jquery plugins and custom javascript code -->
+%= javascript '/js/plugins.js'
+%= javascript '/js/main.js'

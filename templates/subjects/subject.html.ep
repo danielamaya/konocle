@@ -1,0 +1,247 @@
+% layout 'default';
+% title $subject;
+
+<div class="row">
+    <!-- Begin User Link Area -->
+    <div class="col-md-10">
+        <ul class="nav nav-tabs" data-toggle="tabs">
+            <li class="active"><a href="#example-tabs-home"><i class="icon-folder-open"></i> Explore</a></li>
+            <li><a href="#example-tabs-messages"><i class="icon-heart"></i> Top</a></li>
+            <li><a href="#example-tabs-options"><i class="icon-heart-empty"></i> New</a></li>
+            <li><a href="#example-tabs-options"><i class="icon-remove"></i> Reported</a></li>
+            <li><a href="#example-tabs-wiki"><i class="icon-pencil"></i> Wiki</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="example-tabs-home">
+                % while (my $discipline = $disciplines->next) {
+                    <li><%= $discipline->get_column('discipline_name') %></li>
+                % }
+            </div>
+            <div class="tab-pane" id="example-tabs-profile">Profile Content..</div>
+            <div class="tab-pane" id="example-tabs-messages">
+                <!-- Search Results Block -->
+            <div class="block block-last">
+    <!-- Search Results Title -->
+    <div class="block-title clearfix">
+        <!-- Block Options -->
+        <div class="block-options">
+            <div class="btn-group">
+                <a href="javascript:void(0)" class="btn btn-option dropdown-toggle" data-toggle="dropdown">Sort By <i class="icon-angle-down"></i></a>
+                <ul class="dropdown-menu pull-right">
+                    <li class="active"><a href="javascript:void(0)">Relevance</a></li>
+                    <li><a href="javascript:void(0)">Proficiency</a></li>
+                    <li><a href="javascript:void(0)">Date Registered</a></li>
+                    <li><a href="javascript:void(0)">Popularity</a></li>
+                </ul>
+            </div>
+        </div>
+        <!-- END Block Options -->
+        <h4>5,806 Results</h4>
+    </div>
+    <!-- END Search Results Title -->
+
+    <!-- Search Results Content -->
+    <div class="block-content">
+        <!-- Results -->
+        <div class="row row-items">
+            <div class="col-md-5">
+                <div class="media media-hover">
+                    <a href="javascript:void(0)" class="pull-left">
+                        <img src="/img/heart.png" height="64px" width="64px" class="media-object img-circle" alt="Image">
+                    </a>
+                    <div class="media-body">
+                        <h4 class="media-heading">Use sssd Instead of nslcd in LDAP Setup on CentOS/RHEL 6</h4>
+                        <p>Jun 18, 2012 - In a previous post I explained how to set up LDAP authentication and name services in CentOS/RHEL 6. There is nothing wrong with the setup ...
+                        </p>
+                        <span class="badge badge-success">rhel</span>
+                        <span class="badge badge-success">centos</span>
+                        <span class="badge badge-success">ldap</span>
+                        <span class="badge badge-success">nslcd</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-1"></div>
+            <div class="col-md-5">
+                <div class="media media-hover">
+                    <a href="javascript:void(0)" class="pull-left">
+                        <img src="/img/heart.png" height="64px" width="64px" class="media-object img-circle" alt="Image">
+                    </a>
+                    <div class="media-body">
+                        <h4 class="media-heading">Use sssd Instead of nslcd in LDAP Setup on CentOS/RHEL 6</h4>
+                        <p>Jun 18, 2012 - In a previous post I explained how to set up LDAP authentication and name services in CentOS/RHEL 6. There is nothing wrong with the setup ...
+                        </p>
+                        <span class="badge badge-success">rhel</span>
+                        <span class="badge badge-success">centos</span>
+                        <span class="badge badge-success">ldap</span>
+                        <span class="badge badge-success">nslcd</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row row-items">
+            <div class="col-md-5">
+                <div class="media media-hover">
+                    <a href="javascript:void(0)" class="pull-left">
+                        <img src="/img/heart.png" height="64px" width="64px" class="media-object img-circle" alt="Image">
+                    </a>
+                    <div class="media-body">
+                        <h4 class="media-heading">Use sssd Instead of nslcd in LDAP Setup on CentOS/RHEL 6</h4>
+                        <p>Jun 18, 2012 - In a previous post I explained how to set up LDAP authentication and name services in CentOS/RHEL 6. There is nothing wrong with the setup ...
+                        </p>
+                        <span class="badge badge-success">rhel</span>
+                        <span class="badge badge-success">centos</span>
+                        <span class="badge badge-success">ldap</span>
+                        <span class="badge badge-success">nslcd</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-1"></div>
+            <div class="col-md-5">
+                <div class="media media-hover">
+                    <a href="javascript:void(0)" class="pull-left">
+                        <img src="/img/heart.png" height="64px" width="64px" class="media-object img-circle" alt="Image">
+                    </a>
+                    <div class="media-body">
+                        <h4 class="media-heading">Use sssd Instead of nslcd in LDAP Setup on CentOS/RHEL 6</h4>
+                        <p>Jun 18, 2012 - In a previous post I explained how to set up LDAP authentication and name services in CentOS/RHEL 6. There is nothing wrong with the setup ...
+                        </p>
+                        <span class="badge badge-success">rhel</span>
+                        <span class="badge badge-success">centos</span>
+                        <span class="badge badge-success">ldap</span>
+                        <span class="badge badge-success">nslcd</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row row-items">
+            <div class="col-md-5">
+                <div class="media media-hover">
+                    <div class="media-heart pull-left">
+                        <a href="javascript:void(0)">
+                           <span class="badge badge-danger">50</span>
+                        </a>
+                    </div>
+                    <div class="media-body">
+                        <h4 class="media-heading">Use sssd Instead of nslcd in LDAP Setup on CentOS/RHEL 6</h4>
+                        <p>Jun 18, 2012 - In a previous post I explained how to set up LDAP authentication and name services in CentOS/RHEL 6. There is nothing wrong with the setup ...
+                        </p>
+                        <span class="badge badge-success">rhel</span>
+                        <span class="badge badge-success">centos</span>
+                        <span class="badge badge-success">ldap</span>
+                        <span class="badge badge-success">nslcd</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-1"></div>
+            <div class="col-md-5">
+                <div class="media media-hover">
+                    <a href="javascript:void(0)" class="pull-left">
+                        <img src="/img/heart.png" height="64px" width="64px" class="media-object img-circle" alt="Image">
+                    </a>
+                    <div class="media-body">
+                        <h4 class="media-heading">Use sssd Instead of nslcd in LDAP Setup on CentOS/RHEL 6</h4>
+                        <p>Jun 18, 2012 - In a previous post I explained how to set up LDAP authentication and name services in CentOS/RHEL 6. There is nothing wrong with the setup ...
+                        </p>
+                        <span class="badge badge-success">rhel</span>
+                        <span class="badge badge-success">centos</span>
+                        <span class="badge badge-success">ldap</span>
+                        <span class="badge badge-success">nslcd</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row row-items">
+            <div class="col-md-5">
+                <div class="media media-hover">
+                    <a href="javascript:void(0)" class="pull-left">
+                        <img src="/img/heart.png" height="64px" width="64px" class="media-object img-circle" alt="Image">
+                    </a>
+                    <div class="media-body">
+                        <h4 class="media-heading">Use sssd Instead of nslcd in LDAP Setup on CentOS/RHEL 6</h4>
+                        <p>Jun 18, 2012 - In a previous post I explained how to set up LDAP authentication and name services in CentOS/RHEL 6. There is nothing wrong with the setup ...
+                        </p>
+                        <span class="badge badge-success">rhel</span>
+                        <span class="badge badge-success">centos</span>
+                        <span class="badge badge-success">ldap</span>
+                        <span class="badge badge-success">nslcd</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-1"></div>
+            <div class="col-md-5">
+                <div class="media media-hover">
+                    <a href="javascript:void(0)" class="pull-left">
+                        <img src="/img/heart.png" height="64px" width="64px" class="media-object img-circle" alt="Image">
+                    </a>
+                    <div class="media-body">
+                        <h4 class="media-heading">Use sssd Instead of nslcd in LDAP Setup on CentOS/RHEL 6</h4>
+                        <p>Jun 18, 2012 - In a previous post I explained how to set up LDAP authentication and name services in CentOS/RHEL 6. There is nothing wrong with the setup ...
+                        </p>
+                        <span class="badge badge-success">rhel</span>
+                        <span class="badge badge-success">centos</span>
+                        <span class="badge badge-success">ldap</span>
+                        <span class="badge badge-success">nslcd</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END Results -->
+
+        <!-- Pagination -->
+        <div class="text-center">
+            <ul class="pagination">
+                <li class="disabled"><a href="javascript:void(0)">Prev</a></li>
+                <li class="active"><a href="javascript:void(0)">1</a></li>
+                <li><a href="javascript:void(0)">2</a></li>
+                <li><a href="javascript:void(0)">3</a></li>
+                <li><a href="javascript:void(0)">Next</a></li>
+            </ul>
+        </div>
+        <!-- END Pagination -->
+    </div>
+    <!-- END Search Results Content -->
+</div>
+<!-- END Search Results Block -->
+            </div>
+            <div class="tab-pane" id="example-tabs-options">Options Content..</div>
+            <div class="tab-pane" id="example-tabs-wiki"><%== $wiki %></div>
+        </div>
+    </div>
+
+    <!-- Begin User Profile Area -->
+    <div class="col-md-2 text-center">
+        <button type="button" class="btn btn-success" style="margin-bottom:5px;">Submit Link</button>
+        <button type="button" class="btn btn-info" style="margin-bottom:5px;">Submit Guide</button>
+        <button type="button" class="btn btn-warning" style="margin-bottom:5px;">Create Sub-discipline</button>
+        <div class="block">
+            <div class="block-title"><h4>Search</h4></div>
+            <div class="block-content full"><span class="badge badge-success">16</span></div>
+        </div>
+        <div class="block">
+            <div class="block-title"><h4>About</h4></div>
+            <div class="block-content full"><span class="badge badge-success">16</span></div>
+        </div>
+        <div class="block">
+            <div class="block-title"><h4>Related</h4></div>
+            <div class="block-content full"><span class="badge badge-danger">169</span></div>
+        </div>
+        <div class="block">
+            <div class="block-title"><h4>Tags</h4></div>
+            <div class="block-content full"><img src="/img/heart.png" height="70px" width="70px" /></div>
+        </div>
+        <div class="block">
+            <div class="block-title"><h4>Statistics</h4></div>
+            <div class="block-content full">Top Contribs</div>
+            <div class="block-content full"># of links</div>
+            <div class="block-content full">Subscribers</div>
+        </div>
+    </div>
+</div>
+
+%= include 'footer';
+%= include 'common_js';
+
+<!-- Javascript code only for this page -->
+<script>
+
+</script>

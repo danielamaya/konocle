@@ -1,0 +1,105 @@
+</div>
+    <!-- END Page Content -->
+
+    <!-- Footer -->
+    <footer>
+        <div class="pull-right">
+            Crafted with <i class="icon-heart"></i> by <strong><a href="http://google.com" target="_blank">Daniel Amaya</a></strong>
+        </div>
+        <div class="pull-left">
+            <span id="year-copy"></span> &copy; <strong><a href="http://goo.gl/mssAH" target="_blank">Konocle</a></strong>
+        </div>
+    </footer>
+    <!-- END Footer -->
+</div>
+<!-- END Page Container -->
+
+<!-- Scroll to top link, check main.js - scrollToTop() -->
+<a href="#" id="to-top"><i class="icon-chevron-up"></i></a>
+
+<!-- User Modal Account, appears when clicking on 'User Settings' link found on user dropdown menu (header, top right) -->
+<div id="modal-user-account" class="modal fade">
+    <!-- Modal Dialog -->
+    <div class="modal-dialog">
+        <!-- Modal Content -->
+        <div class="modal-content">
+            <!-- Modal Body -->
+            <div class="modal-body remove-padding">
+                <!-- Modal Tabs -->
+                <div class="block-tabs block-themed">
+                    <div class="block-options">
+                        <a href="javascript:void(0)" class="btn btn-option" data-dismiss="modal">×</a>
+                    </div>
+                    <ul class="nav nav-tabs" data-toggle="tabs">
+                        <li class="active"><a href="#modal-user-account-account"><i class="glyphicon-log_in"></i> Login</a></li>
+                        <li><a href="#modal-user-account-profile"><i class="glyphicon-user_add"></i> Register</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <!-- Account Tab Content -->
+                        <div class="tab-pane active" id="modal-user-account-account">
+                            <%= form_for login => (method => 'post') => begin %>
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">Username</label>
+                                    <div class="col-md-8">
+                                        %= text_field 'username', class => 'form-control'
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-4" for="modal-account-pass">Password</label>
+                                    <div class="col-md-8">
+                                        %= password_field 'password', id => 'modal-account-pass', class => 'form-control'
+                                    </div>
+                                </div>
+                                %= submit_button
+                            <% end %>
+                        </div>
+                        <!-- END Account Tab Content -->
+
+                        <!-- Profile Tab Content -->
+                        <div class="tab-pane" id="modal-user-account-profile">
+                             <%= form_for register => (method => 'post') => begin %>
+                                <div class="form-group">
+                                    %= label_for username => 'Username', class => 'control-label col-md-4'
+                                    <div class="col-md-8">
+                                        %= text_field 'username', class => 'form-control'
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    %= label_for email => 'E-Mail (optional)', class => 'control-label col-md-4'
+                                    <div class="col-md-8">
+                                        %= text_field 'email', id => 'register-email', class => 'form-control'
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    %= label_for password => 'Password', class => 'control-label col-md-4'
+                                    <div class="col-md-8">
+                                        %= password_field 'password', id => 'register-pass', class => 'form-control'
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    %= label_for verify_password => 'Verify Password', class => 'control-label col-md-4'
+                                    <div class="col-md-8">
+                                        %= password_field 'verify_password', id => 'register-pass-verify', class => 'form-control'
+                                    </div>
+                                </div>
+                                %= submit_button
+                            <% end %>
+                        </div>
+                        <!-- END Profile Tab Content -->
+                    </div>
+                </div>
+                <!-- END Modal Tabs -->
+            </div>
+            <!-- END Modal Body -->
+
+            <!-- Modal footer -->
+
+            <!-- END Modal footer -->
+        </div>
+        <!-- END Modal Content -->
+    </div>
+    <!-- END Modal Dialog -->
+</div>
+<!-- END User Modal Settings -->
+
+

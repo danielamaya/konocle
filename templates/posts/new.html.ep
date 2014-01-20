@@ -1,0 +1,70 @@
+% layout 'default';
+% title 'Konocle - Create a New Post.';
+
+<div class="row">
+    <div class="col-md-10">
+
+        <div class="form-group">
+            <label class="control-label col-md-2" for="general-text">Title</label>
+            <div class="col-md-3">
+                <input type="text" id="general-text" name="general-text" class="form-control">
+                <span class="help-block">Your username must be unique..</span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-2" for="general-text">Subtitle</label>
+            <div class="col-md-3">
+                <input type="text" id="general-text" name="general-text" class="form-control">
+                <span class="help-block">Your username must be unique..</span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-2" for="general-text">Tags</label>
+            <div class="col-md-3">
+                <input type="text" id="general-text" name="general-text" class="form-control">
+                <span class="help-block">Your username must be unique..</span>
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div id="raptor" class="block-section content-text">
+            <textarea id="example-post-comment" name="example-post-comment" class="form-control textarea-editor textarea-elastic" rows="10"></textarea>
+
+        </div>
+        <!-- END Main Content -->
+    </div>
+
+    <div class="col-md-2 text-center">
+        <div class="block">
+            <div class="block-title"><h4>Search</h4></div>
+            <div class="block-content full">
+                <div class="input-group">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default"><i class="icon-search"></i></button>
+                    </span>
+                    <input type="text" id="general-prepend5" name="general-prepend5" class="form-control" placeholder="search..">
+                </div>
+            </div>
+        </div>
+        <div class="block">
+            <div class="block-title"><h4>About</h4></div>
+            <div class="block-content full"><span class="badge badge-success">16</span></div>
+        </div>
+        <div class="block">
+            <div class="block-title"><h4>Related</h4></div>
+            <div class="block-content full"><span class="badge badge-danger">169</span></div>
+        </div>
+        <div class="block">
+            <div class="block-title"><h4>Tags</h4></div>
+            <div class="block-content full"><img src="/img/heart.png" height="70px" width="70px" /></div>
+        </div>
+        <div class="block">
+            <div class="block-title"><h4>Statistics</h4></div>
+            <div class="block-content full">Top Contribs</div>
+            <div class="block-content full"># of links</div>
+            <div class="block-content full">Subscribers</div>
+        </div>
+    </div>
+</div>
+<!-- END Page Content -->
+%= include 'footer';
+%= include 'common_js';

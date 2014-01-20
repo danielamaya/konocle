@@ -1,0 +1,62 @@
+<header class="navbar navbar-inverse">
+  <div class="row">
+
+    <div class="col-sm-4 col-xs-4" id="notifications">
+      <ul class="navbar-nav-custom pull-left">
+         <li class="dropdown dropdown-notifications">
+              <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">
+                  <i class="icon-reorder"></i>
+              </a>
+              <ul class="dropdown-menu scrollable">
+                    % my $schema = $self->schema;
+                    % my $categories = $schema->resultset('Category')->search;
+                    % while ( my $category = $categories->next ) {
+                   <li><a href="/s/<%= $category->category_link_name %>"><%= $category->category_display_name %></a></li>
+                  % }
+
+              </ul>
+          </li>
+      </ul>
+    </div>
+    <!-- Login / Register | Profile / Logout -->
+    <div id="header-nav-section" class="col-sm-8 col-xs-8 clearfix">
+      <ul class="navbar-nav-custom pull-right">
+
+        <li class="divider-vertical"></li>
+        % if ( not $self->is_user_authenticated ) {
+        <li>
+            <a href="#modal-user-account" role="button" data-toggle="modal" data-placement="right" title="Settings">
+                Login / Register
+            </a>
+        </li>
+        % }
+        % else {
+        <li>
+            <a href="<%== url_for 'profile' %>" role="button" data-toggle="modal" data-placement="right" title="Settings">
+                Profile
+            </a>
+        </li>
+        <li class="divider-vertical"></li>
+        <li>
+            <a href="<%== url_for 'logout' %>" title="Logout">
+                Logout
+            </a>
+        </li>
+        % }
+
+      </ul>
+    </div>
+    <!-- End Login / Register | Profile / Logout -->
+  </div>
+</header>
+<!-- Page Container -->
+<div id="page-container" class="full-width">
+    <!-- Page Content -->
+    <div id="page-content">
+      <!-- Breadcrumb -->
+      <ul class="breadcrumb breadcrumb-top">
+        <li>
+                        <a href="index.html"><i class="glyphicon-display"></i></a>
+                    </li>
+                    <li><a href="">Dashboard</a></li>
+      </ul>

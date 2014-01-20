@@ -1,0 +1,2 @@
+#!/bin/sh
+script/konocle daemon --listen http://*:$PORT --mode production

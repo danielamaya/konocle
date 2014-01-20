@@ -1,0 +1,97 @@
+% layout 'default';
+% title 'Konocle - Add a Link to the Database of Knowledge.';
+
+
+<%= form_for add_url => (method => 'post') => (class => 'form-horizontal') => begin %>
+    %= label_for url_address => 'Address', class => 'control-label col-md-12 text-left'
+    <div class="col-md-6">
+        %= text_field 'url_address', class => 'form-control'
+    </div>
+
+    %= label_for url_title => 'Title', class => 'control-label col-md-12 text-left'
+    <div class="col-md-6">
+        %= text_field 'url_title', class => 'form-control'
+    </div>
+
+    %= label_for url_desc => 'Description', class => 'control-label col-md-12 text-left'
+    <div class="col-md-6">
+        %= text_area 'url_desc', class => 'form-control', rows => 6, id => 'description'
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-12 text-left" for="general-select">Academic Disciplines</label>
+        <div class="col-md-3">
+            <select id="general-multiple-select" name="general-multiple-select" class="form-control" size="5" multiple>
+                % while ( my $discipline = $disciplines->next ) {
+                    <option value="<%= $discipline %>"><%= $discipline %></option>
+                % }
+            </select>
+        </div>
+    </div>
+    %= label_for url_tags => 'Tags', class => 'control-label col-md-12 text-left'
+        <div class="col-md-6">
+            <input type="text" name="tags" id="tags" placeholder="Tags" class="tm-input tm-input-success"/>
+        </div>
+    %= submit_button
+<% end %>
+<button type="button" class="btn btn-primary" id="gomofo">Go Mofo!</span>
+
+<div id="test" style="left: 710px; position: absolute; top: 644px; z-index: 9999; opacity: 0; display: none;">
+    <span class="button b-close">
+    <span>X</span>
+    </span>
+        I have a moderatly sized anus
+    <br>
+    <span class="badge badge-success">Konocle</span>
+</div>
+
+%= include 'footer';
+%= include 'common_js';
+
+<!-- Javascript code only for this page -->
+<script>
+    $(function() {
+
+
+
+        // Tags
+        var tagApi = jQuery("#tags").tagsManager();
+        jQuery("#tags").typeahead({
+            name: 'tags',
+            limit: 15,
+            valueKey: 'tag_name',
+            remote: "/autocomplete?term=%QUERY"
+        }).on('typeahead:selected', function (e, d) {
+            $("#tags").val("");
+            tagApi.tagsManager("pushTag", d.value);
+        });
+        $('.tt-hint').css('top','50px');
+
+        $('#description').focusout(function(){
+            var words = $(this).val().split(" ");
+            for ( i = 0; i < words.length; i++ ) {
+                var word = words[i].toLowerCase();
+                $.getJSON( "/get_tag_name?term=" + word, function (data) {
+                    $.each( data, function( key, val ) {
+                        tagApi.tagsManager("pushTag", val.tag_name);
+                    });
+                });
+            }
+        });
+
+        $('#gomofo').bind('click', function(e) {
+
+                // Prevents the default action to be triggered.
+                e.preventDefault();
+
+                // Triggering bPopup when click event is fired
+                $('#test').bPopup({
+                    fadeSpeed: 'slow', //can be a string ('slow'/'fast') or int
+                    followSpeed: 1500, //can be a string ('slow'/'fast') or int
+                    modalColor: 'greenYellow'
+                });
+
+            });
+
+
+    });
+</script>
