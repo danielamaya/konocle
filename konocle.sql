@@ -10,14 +10,14 @@ SET check_function_bodies = false;
 SET client_min_messages = warning;
 
 --
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner:
 --
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-
+CREATE EXTENSION ltree;
 
 --
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner:
 --
 
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
@@ -30,17 +30,40 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: categories; Type: TABLE; Schema: public; Owner: konocle; Tablespace: 
+-- Name: categories; Type: TABLE; Schema: public; Owner: konocle; Tablespace:
 --
 
-CREATE TABLE categories (
-    category_id bigint NOT NULL,
-    category_display_name character varying(50) NOT NULL,
-    category_created_date timestamp with time zone DEFAULT now() NOT NULL,
-    category_link_name character varying(50),
-    category_wiki text
+CREATE TABLE categories(
+    category_id SERIAL PRIMARY KEY,
+    category_name TEXT NOT NULL,
+    category_description CHARACTER VARYING(250),
+    category_parent_id INTEGER REFERENCES categories,
+    category_parent_path LTREE
 );
 
+CREATE INDEX category_parent_path_idx ON categories USING GIST (category_parent_path);
+CREATE INDEX category_parent_id_idx ON categories (category_parent_id);
+
+CREATE OR REPLACE FUNCTION update_categories_parent_path() RETURNS TRIGGER AS $$
+    DECLARE
+        path ltree;
+    BEGIN
+        IF NEW.category_parent_id IS NULL THEN
+            NEW.category_parent_path = 'root'::ltree;
+        ELSEIF TG_OP = 'INSERT' OR OLD.category_parent_id IS NULL OR OLD.category_parent_id != NEW.category_parent_id THEN
+            SELECT category_parent_path || id::text FROM section WHERE id = NEW.category_parent_id INTO path;
+            IF path IS NULL THEN
+                RAISE EXCEPTION 'Invalid parent_id %', NEW.parent_id;
+            END IF;
+            NEW.category_parent_path = path;
+        END IF;
+        RETURN NEW;
+    END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER parent_path_tgr
+    BEFORE INSERT OR UPDATE ON categories
+    FOR EACH ROW EXECUTE PROCEDURE update_categories_parent_path();
 
 ALTER TABLE public.categories OWNER TO konocle;
 
@@ -66,45 +89,9 @@ ALTER SEQUENCE categories_category_id_seq OWNED BY categories.category_id;
 
 
 --
--- Name: categories_disciplines; Type: TABLE; Schema: public; Owner: konocle; Tablespace: 
+-- Name: comments; Type: TABLE; Schema: public; Owner: konocle; Tablespace:
 --
 
-CREATE TABLE categories_disciplines (
-    categories_disciplines_id bigint NOT NULL,
-    categories_disciplines_category_id bigint NOT NULL,
-    categories_disciplines_discipline_id bigint NOT NULL,
-    categories_disciplines_created_date timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
-ALTER TABLE public.categories_disciplines OWNER TO konocle;
-
---
--- Name: categories_disciplines_categories_disciplines_id_seq; Type: SEQUENCE; Schema: public; Owner: konocle
---
-
-CREATE SEQUENCE categories_disciplines_categories_disciplines_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.categories_disciplines_categories_disciplines_id_seq OWNER TO konocle;
-
---
--- Name: categories_disciplines_categories_disciplines_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: konocle
---
-
-ALTER SEQUENCE categories_disciplines_categories_disciplines_id_seq OWNED BY categories_disciplines.categories_disciplines_id;
-
-
---
--- Name: comments; Type: TABLE; Schema: public; Owner: konocle; Tablespace: 
---
-
-CREATE TABLE comments (
     comment_id bigint NOT NULL,
     comment_url_id bigint NOT NULL,
     comment_user_id bigint NOT NULL,
@@ -113,16 +100,46 @@ CREATE TABLE comments (
     comment_hearts bigint DEFAULT 0 NOT NULL,
     comment_spam bigint DEFAULT 0 NOT NULL,
     comment_created_date timestamp with time zone DEFAULT now() NOT NULL
+
+CREATE TABLE categories(
+    category_id SERIAL PRIMARY KEY,
+    category_name TEXT NOT NULL,
+    category_description CHARACTER VARYING(250),
+    category_parent_id INTEGER REFERENCES categories,
+    category_parent_path LTREE
 );
 
+CREATE INDEX category_parent_path_idx ON categories USING GIST (category_parent_path);
+CREATE INDEX category_parent_id_idx ON categories (category_parent_id);
 
-ALTER TABLE public.comments OWNER TO konocle;
+CREATE OR REPLACE FUNCTION update_categories_parent_path() RETURNS TRIGGER AS $$
+    DECLARE
+        path ltree;
+    BEGIN
+        IF NEW.category_parent_id IS NULL THEN
+            NEW.category_parent_path = 'root'::ltree;
+        ELSEIF TG_OP = 'INSERT' OR OLD.category_parent_id IS NULL OR OLD.category_parent_id != NEW.category_parent_id THEN
+            SELECT category_parent_path || id::text FROM section WHERE id = NEW.category_parent_id INTO path;
+            IF path IS NULL THEN
+                RAISE EXCEPTION 'Invalid parent_id %', NEW.parent_id;
+            END IF;
+            NEW.category_parent_path = path;
+        END IF;
+        RETURN NEW;
+    END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER parent_path_tgr
+    BEFORE INSERT OR UPDATE ON categories
+    FOR EACH ROW EXECUTE PROCEDURE update_categories_parent_path();
+
+ALTER TABLE public.categories OWNER TO konocle;
 
 --
--- Name: comments_comment_id_seq; Type: SEQUENCE; Schema: public; Owner: konocle
+-- Name: categories_category_id_seq; Type: SEQUENCE; Schema: public; Owner: konocle
 --
 
-CREATE SEQUENCE comments_comment_id_seq
+CREATE SEQUENCE categories_category_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -130,52 +147,16 @@ CREATE SEQUENCE comments_comment_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.comments_comment_id_seq OWNER TO konocle;
+ALTER TABLE public.categories_category_id_seq OWNER TO konocle;
 
 --
--- Name: comments_comment_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: konocle
+-- Name: categories_category_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: konocle
 --
 
-ALTER SEQUENCE comments_comment_id_seq OWNED BY comments.comment_id;
-
-
---
--- Name: disciplines; Type: TABLE; Schema: public; Owner: konocle; Tablespace: 
---
-
-CREATE TABLE disciplines (
-    discipline_id bigint NOT NULL,
-    discipline_name character varying(100) NOT NULL,
-    discipline_created_date timestamp with time zone DEFAULT now() NOT NULL,
-    discipline_description text
-);
-
-
-ALTER TABLE public.disciplines OWNER TO konocle;
+ALTER SEQUENCE categories_category_id_seq OWNED BY categories.category_id;
 
 --
--- Name: disciplines_discipline_id_seq; Type: SEQUENCE; Schema: public; Owner: konocle
---
-
-CREATE SEQUENCE disciplines_discipline_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.disciplines_discipline_id_seq OWNER TO konocle;
-
---
--- Name: disciplines_discipline_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: konocle
---
-
-ALTER SEQUENCE disciplines_discipline_id_seq OWNED BY disciplines.discipline_id;
-
-
---
--- Name: disciplines_posts; Type: TABLE; Schema: public; Owner: konocle; Tablespace: 
+-- Name: disciplines_posts; Type: TABLE; Schema: public; Owner: konocle; Tablespace:
 --
 
 CREATE TABLE disciplines_posts (
@@ -209,7 +190,7 @@ ALTER SEQUENCE disciplines_posts_disciplines_posts_id_seq OWNED BY disciplines_p
 
 
 --
--- Name: disciplines_requests; Type: TABLE; Schema: public; Owner: konocle; Tablespace: 
+-- Name: disciplines_requests; Type: TABLE; Schema: public; Owner: konocle; Tablespace:
 --
 
 CREATE TABLE disciplines_requests (
@@ -243,7 +224,7 @@ ALTER SEQUENCE disciplines_requests_disciplines_requests_id_seq OWNED BY discipl
 
 
 --
--- Name: disciplines_to_parents; Type: TABLE; Schema: public; Owner: konocle; Tablespace: 
+-- Name: disciplines_to_parents; Type: TABLE; Schema: public; Owner: konocle; Tablespace:
 --
 
 CREATE TABLE disciplines_to_parents (
@@ -277,7 +258,7 @@ ALTER SEQUENCE disciplines_to_parents_disciplines_to_parents_id_seq OWNED BY dis
 
 
 --
--- Name: disciplines_urls; Type: TABLE; Schema: public; Owner: konocle; Tablespace: 
+-- Name: disciplines_urls; Type: TABLE; Schema: public; Owner: konocle; Tablespace:
 --
 
 CREATE TABLE disciplines_urls (
@@ -311,7 +292,7 @@ ALTER SEQUENCE disciplines_urls_disciplines_urls_id_seq OWNED BY disciplines_url
 
 
 --
--- Name: posts; Type: TABLE; Schema: public; Owner: konocle; Tablespace: 
+-- Name: posts; Type: TABLE; Schema: public; Owner: konocle; Tablespace:
 --
 
 CREATE TABLE posts (
@@ -354,7 +335,7 @@ ALTER SEQUENCE posts_post_id_seq OWNED BY posts.post_id;
 
 
 --
--- Name: requests; Type: TABLE; Schema: public; Owner: konocle; Tablespace: 
+-- Name: requests; Type: TABLE; Schema: public; Owner: konocle; Tablespace:
 --
 
 CREATE TABLE requests (
@@ -390,7 +371,7 @@ ALTER SEQUENCE requests_request_id_seq OWNED BY requests.request_id;
 
 
 --
--- Name: tags; Type: TABLE; Schema: public; Owner: konocle; Tablespace: 
+-- Name: tags; Type: TABLE; Schema: public; Owner: konocle; Tablespace:
 --
 
 CREATE TABLE tags (
@@ -405,7 +386,7 @@ CREATE TABLE tags (
 ALTER TABLE public.tags OWNER TO konocle;
 
 --
--- Name: tags_disciplines; Type: TABLE; Schema: public; Owner: konocle; Tablespace: 
+-- Name: tags_disciplines; Type: TABLE; Schema: public; Owner: konocle; Tablespace:
 --
 
 CREATE TABLE tags_disciplines (
@@ -439,7 +420,7 @@ ALTER SEQUENCE tags_disciplines_tags_disciplines_id_seq OWNED BY tags_discipline
 
 
 --
--- Name: tags_posts; Type: TABLE; Schema: public; Owner: konocle; Tablespace: 
+-- Name: tags_posts; Type: TABLE; Schema: public; Owner: konocle; Tablespace:
 --
 
 CREATE TABLE tags_posts (
@@ -473,7 +454,7 @@ ALTER SEQUENCE tags_posts_tags_posts_id_seq OWNED BY tags_posts.tags_posts_id;
 
 
 --
--- Name: tags_requests; Type: TABLE; Schema: public; Owner: konocle; Tablespace: 
+-- Name: tags_requests; Type: TABLE; Schema: public; Owner: konocle; Tablespace:
 --
 
 CREATE TABLE tags_requests (
@@ -528,7 +509,7 @@ ALTER SEQUENCE tags_tag_id_seq OWNED BY tags.tag_id;
 
 
 --
--- Name: tags_urls; Type: TABLE; Schema: public; Owner: konocle; Tablespace: 
+-- Name: tags_urls; Type: TABLE; Schema: public; Owner: konocle; Tablespace:
 --
 
 CREATE TABLE tags_urls (
@@ -562,7 +543,7 @@ ALTER SEQUENCE tags_urls_tags_urls_id_seq OWNED BY tags_urls.tags_urls_id;
 
 
 --
--- Name: tags_users; Type: TABLE; Schema: public; Owner: konocle; Tablespace: 
+-- Name: tags_users; Type: TABLE; Schema: public; Owner: konocle; Tablespace:
 --
 
 CREATE TABLE tags_users (
@@ -597,7 +578,7 @@ ALTER SEQUENCE tags_users_tags_users_id_seq OWNED BY tags_users.tags_users_id;
 
 
 --
--- Name: urls; Type: TABLE; Schema: public; Owner: konocle; Tablespace: 
+-- Name: urls; Type: TABLE; Schema: public; Owner: konocle; Tablespace:
 --
 
 CREATE TABLE urls (
@@ -640,7 +621,7 @@ ALTER SEQUENCE urls_url_id_seq OWNED BY urls.url_id;
 
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: konocle; Tablespace: 
+-- Name: users; Type: TABLE; Schema: public; Owner: konocle; Tablespace:
 --
 
 CREATE TABLE users (
@@ -659,7 +640,7 @@ CREATE TABLE users (
 ALTER TABLE public.users OWNER TO konocle;
 
 --
--- Name: users_comments_loved; Type: TABLE; Schema: public; Owner: konocle; Tablespace: 
+-- Name: users_comments_loved; Type: TABLE; Schema: public; Owner: konocle; Tablespace:
 --
 
 CREATE TABLE users_comments_loved (
@@ -695,7 +676,7 @@ ALTER SEQUENCE users_comments_loved_users_comments_loved_id_seq OWNED BY users_c
 
 
 --
--- Name: users_comments_saved; Type: TABLE; Schema: public; Owner: konocle; Tablespace: 
+-- Name: users_comments_saved; Type: TABLE; Schema: public; Owner: konocle; Tablespace:
 --
 
 CREATE TABLE users_comments_saved (
@@ -730,7 +711,7 @@ ALTER SEQUENCE users_comments_saved_users_comments_saved_id_seq OWNED BY users_c
 
 
 --
--- Name: users_disciplines; Type: TABLE; Schema: public; Owner: konocle; Tablespace: 
+-- Name: users_disciplines; Type: TABLE; Schema: public; Owner: konocle; Tablespace:
 --
 
 CREATE TABLE users_disciplines (
@@ -764,7 +745,7 @@ ALTER SEQUENCE users_disciplines_users_disciplines_id_seq OWNED BY users_discipl
 
 
 --
--- Name: users_posts_loved; Type: TABLE; Schema: public; Owner: konocle; Tablespace: 
+-- Name: users_posts_loved; Type: TABLE; Schema: public; Owner: konocle; Tablespace:
 --
 
 CREATE TABLE users_posts_loved (
@@ -800,7 +781,7 @@ ALTER SEQUENCE users_posts_loved_users_posts_loved_id_seq OWNED BY users_posts_l
 
 
 --
--- Name: users_posts_saved; Type: TABLE; Schema: public; Owner: konocle; Tablespace: 
+-- Name: users_posts_saved; Type: TABLE; Schema: public; Owner: konocle; Tablespace:
 --
 
 CREATE TABLE users_posts_saved (
@@ -835,7 +816,7 @@ ALTER SEQUENCE users_posts_saved_users_posts_saved_id_seq OWNED BY users_posts_s
 
 
 --
--- Name: users_requests_loved; Type: TABLE; Schema: public; Owner: konocle; Tablespace: 
+-- Name: users_requests_loved; Type: TABLE; Schema: public; Owner: konocle; Tablespace:
 --
 
 CREATE TABLE users_requests_loved (
@@ -892,7 +873,7 @@ ALTER SEQUENCE users_requests_loved_users_requests_loved_request_id_seq OWNED BY
 
 
 --
--- Name: users_requests_saved; Type: TABLE; Schema: public; Owner: konocle; Tablespace: 
+-- Name: users_requests_saved; Type: TABLE; Schema: public; Owner: konocle; Tablespace:
 --
 
 CREATE TABLE users_requests_saved (
@@ -927,7 +908,7 @@ ALTER SEQUENCE users_requests_saved_users_requests_saved_id_seq OWNED BY users_r
 
 
 --
--- Name: users_urls_loved; Type: TABLE; Schema: public; Owner: konocle; Tablespace: 
+-- Name: users_urls_loved; Type: TABLE; Schema: public; Owner: konocle; Tablespace:
 --
 
 CREATE TABLE users_urls_loved (
@@ -963,7 +944,7 @@ ALTER SEQUENCE users_urls_loved_users_urls_loved_id_seq OWNED BY users_urls_love
 
 
 --
--- Name: users_urls_saved; Type: TABLE; Schema: public; Owner: konocle; Tablespace: 
+-- Name: users_urls_saved; Type: TABLE; Schema: public; Owner: konocle; Tablespace:
 --
 
 CREATE TABLE users_urls_saved (
@@ -1627,7 +1608,7 @@ SELECT pg_catalog.setval('users_user_id_seq', 1, false);
 
 
 --
--- Name: Category Primary Key; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: Category Primary Key; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY categories
@@ -1635,7 +1616,7 @@ ALTER TABLE ONLY categories
 
 
 --
--- Name: Comments Primary Key; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: Comments Primary Key; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY comments
@@ -1643,7 +1624,7 @@ ALTER TABLE ONLY comments
 
 
 --
--- Name: Discipline Name Unique; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: Discipline Name Unique; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY disciplines
@@ -1651,7 +1632,7 @@ ALTER TABLE ONLY disciplines
 
 
 --
--- Name: Disciplines Primary Key; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: Disciplines Primary Key; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY disciplines
@@ -1659,7 +1640,7 @@ ALTER TABLE ONLY disciplines
 
 
 --
--- Name: Name must be unique; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: Name must be unique; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY categories
@@ -1667,7 +1648,7 @@ ALTER TABLE ONLY categories
 
 
 --
--- Name: Tags Primary Key; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: Tags Primary Key; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY tags
@@ -1675,7 +1656,7 @@ ALTER TABLE ONLY tags
 
 
 --
--- Name: URLs Primary Key; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: URLs Primary Key; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY urls
@@ -1683,7 +1664,7 @@ ALTER TABLE ONLY urls
 
 
 --
--- Name: Users Primary Key; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: Users Primary Key; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY users
@@ -1691,7 +1672,7 @@ ALTER TABLE ONLY users
 
 
 --
--- Name: categories_disciplines pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: categories_disciplines pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY categories_disciplines
@@ -1699,7 +1680,7 @@ ALTER TABLE ONLY categories_disciplines
 
 
 --
--- Name: disciplines_posts pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: disciplines_posts pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY disciplines_posts
@@ -1707,7 +1688,7 @@ ALTER TABLE ONLY disciplines_posts
 
 
 --
--- Name: disciplines_requests pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: disciplines_requests pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY disciplines_requests
@@ -1715,7 +1696,7 @@ ALTER TABLE ONLY disciplines_requests
 
 
 --
--- Name: disciplines_to_parents_pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: disciplines_to_parents_pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY disciplines_to_parents
@@ -1723,7 +1704,7 @@ ALTER TABLE ONLY disciplines_to_parents
 
 
 --
--- Name: disciplines_urls pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: disciplines_urls pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY disciplines_urls
@@ -1731,7 +1712,7 @@ ALTER TABLE ONLY disciplines_urls
 
 
 --
--- Name: posts pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: posts pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY posts
@@ -1739,7 +1720,7 @@ ALTER TABLE ONLY posts
 
 
 --
--- Name: request pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: request pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY requests
@@ -1747,7 +1728,7 @@ ALTER TABLE ONLY requests
 
 
 --
--- Name: tags_disciplines pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: tags_disciplines pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY tags_disciplines
@@ -1755,7 +1736,7 @@ ALTER TABLE ONLY tags_disciplines
 
 
 --
--- Name: tags_disciplines_tags_disciplines_discipline_id_tags_discip_key; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: tags_disciplines_tags_disciplines_discipline_id_tags_discip_key; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY tags_disciplines
@@ -1763,7 +1744,7 @@ ALTER TABLE ONLY tags_disciplines
 
 
 --
--- Name: tags_posts pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: tags_posts pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY tags_posts
@@ -1771,7 +1752,7 @@ ALTER TABLE ONLY tags_posts
 
 
 --
--- Name: tags_requests pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: tags_requests pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY tags_requests
@@ -1779,7 +1760,7 @@ ALTER TABLE ONLY tags_requests
 
 
 --
--- Name: tags_tag_name_key; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: tags_tag_name_key; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY tags
@@ -1787,7 +1768,7 @@ ALTER TABLE ONLY tags
 
 
 --
--- Name: tags_urls pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: tags_urls pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY tags_urls
@@ -1795,7 +1776,7 @@ ALTER TABLE ONLY tags_urls
 
 
 --
--- Name: tags_users pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: tags_users pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY tags_users
@@ -1803,7 +1784,7 @@ ALTER TABLE ONLY tags_users
 
 
 --
--- Name: urls_url_address_key; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: urls_url_address_key; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY urls
@@ -1811,7 +1792,7 @@ ALTER TABLE ONLY urls
 
 
 --
--- Name: users_comments_loved pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: users_comments_loved pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY users_comments_loved
@@ -1819,7 +1800,7 @@ ALTER TABLE ONLY users_comments_loved
 
 
 --
--- Name: users_comments_loved unique; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: users_comments_loved unique; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY users_comments_loved
@@ -1827,7 +1808,7 @@ ALTER TABLE ONLY users_comments_loved
 
 
 --
--- Name: users_comments_saved pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: users_comments_saved pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY users_comments_saved
@@ -1835,7 +1816,7 @@ ALTER TABLE ONLY users_comments_saved
 
 
 --
--- Name: users_disciplines pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: users_disciplines pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY users_disciplines
@@ -1843,7 +1824,7 @@ ALTER TABLE ONLY users_disciplines
 
 
 --
--- Name: users_posts_loved pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: users_posts_loved pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY users_posts_loved
@@ -1851,7 +1832,7 @@ ALTER TABLE ONLY users_posts_loved
 
 
 --
--- Name: users_posts_loved_users_posts_loved_post_id_users_posts_lov_key; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: users_posts_loved_users_posts_loved_post_id_users_posts_lov_key; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY users_posts_loved
@@ -1859,7 +1840,7 @@ ALTER TABLE ONLY users_posts_loved
 
 
 --
--- Name: users_posts_saved pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: users_posts_saved pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY users_posts_saved
@@ -1867,7 +1848,7 @@ ALTER TABLE ONLY users_posts_saved
 
 
 --
--- Name: users_requests_loved pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: users_requests_loved pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY users_requests_loved
@@ -1875,7 +1856,7 @@ ALTER TABLE ONLY users_requests_loved
 
 
 --
--- Name: users_requests_loved_users_requests_loved_request_id_users__key; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: users_requests_loved_users_requests_loved_request_id_users__key; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY users_requests_loved
@@ -1883,7 +1864,7 @@ ALTER TABLE ONLY users_requests_loved
 
 
 --
--- Name: users_requests_saved pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: users_requests_saved pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY users_requests_saved
@@ -1891,7 +1872,7 @@ ALTER TABLE ONLY users_requests_saved
 
 
 --
--- Name: users_urls_loved pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: users_urls_loved pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY users_urls_loved
@@ -1899,7 +1880,7 @@ ALTER TABLE ONLY users_urls_loved
 
 
 --
--- Name: users_urls_loved unique; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: users_urls_loved unique; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY users_urls_loved
@@ -1907,7 +1888,7 @@ ALTER TABLE ONLY users_urls_loved
 
 
 --
--- Name: users_urls_saved pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: users_urls_saved pkey; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY users_urls_saved
@@ -1915,7 +1896,7 @@ ALTER TABLE ONLY users_urls_saved
 
 
 --
--- Name: users_user_login_key; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace: 
+-- Name: users_user_login_key; Type: CONSTRAINT; Schema: public; Owner: konocle; Tablespace:
 --
 
 ALTER TABLE ONLY users
