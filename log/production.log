@@ -1,1 +1,17 @@
 [Mon Jan 20 21:21:20 2014] [info] Listening at "http://*:3000".
+[Tue Jan 21 00:52:19 2014] [info] Listening at "http://*:3000".
+[Tue Jan 21 00:52:24 2014] [error] DBIx::Class::Storage::DBI::_dbh_execute(): DBI Exception: DBD::Pg::st execute failed: ERROR:  column me.category_created_date does not exist
+LINE 1: SELECT me.category_id, me.category_display_name, me.category...
+                                                         ^ [for Statement "SELECT me.category_id, me.category_display_name, me.category_created_date, me.category_link_name, me.category_wiki FROM categories me"] at template navmenus.html.ep line 13
+8:                   <i class="icon-reorder"></i>
+9:               </a>
+10:               <ul class="dropdown-menu scrollable">
+11:                     % my $schema = $self->schema;
+12:                     % my $categories = $schema->resultset('Category')->search;
+13:                     % while ( my $category = $categories->next ) {
+14:                    <li><a href="/s/<%= $category->category_link_name %>"><%= $category->category_display_name %></a></li>
+15:                   % }
+16: 
+17:               </ul>
+18:           </li>
+

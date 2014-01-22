@@ -16402,3 +16402,33 @@ LINE 1: SELECT me.category_id, me.category_display_name, me.category...
 [Sun Jan 19 16:15:48 2014] [debug] Rendering inline template.
 [Sun Jan 19 16:15:48 2014] [debug] Rendering inline template.
 [Sun Jan 19 16:15:48 2014] [debug] 500 Internal Server Error (1.436866s, 0.696/s).
+[Tue Jan 21 00:52:37 2014] [info] Listening at "http://*:3000".
+[Tue Jan 21 00:52:40 2014] [debug] GET "/".
+[Tue Jan 21 00:52:40 2014] [debug] Routing to controller "Konocle::Main" and action "index".
+[Tue Jan 21 00:52:40 2014] [debug] Action not found in controller.
+[Tue Jan 21 00:52:40 2014] [debug] Rendering template "main/index.html.ep".
+[Tue Jan 21 00:52:40 2014] [debug] Rendering template "footer.html.ep".
+[Tue Jan 21 00:52:40 2014] [debug] Rendering template "common_js.html.ep".
+[Tue Jan 21 00:52:40 2014] [debug] Rendering template "layouts/default.html.ep".
+[Tue Jan 21 00:52:40 2014] [debug] Rendering template "header_common.html.ep".
+[Tue Jan 21 00:52:40 2014] [debug] Rendering template "navmenus.html.ep".
+[Tue Jan 21 00:52:40 2014] [error] DBIx::Class::Storage::DBI::_dbh_execute(): DBI Exception: DBD::Pg::st execute failed: ERROR:  column me.category_created_date does not exist
+LINE 1: SELECT me.category_id, me.category_display_name, me.category...
+                                                         ^ [for Statement "SELECT me.category_id, me.category_display_name, me.category_created_date, me.category_link_name, me.category_wiki FROM categories me"] at template navmenus.html.ep line 13
+8:                   <i class="icon-reorder"></i>
+9:               </a>
+10:               <ul class="dropdown-menu scrollable">
+11:                     % my $schema = $self->schema;
+12:                     % my $categories = $schema->resultset('Category')->search;
+13:                     % while ( my $category = $categories->next ) {
+14:                    <li><a href="/s/<%= $category->category_link_name %>"><%= $category->category_display_name %></a></li>
+15:                   % }
+16: 
+17:               </ul>
+18:           </li>
+
+[Tue Jan 21 00:52:40 2014] [debug] Template "exception.development.html.ep" not found.
+[Tue Jan 21 00:52:40 2014] [debug] Template "exception.html.ep" not found.
+[Tue Jan 21 00:52:40 2014] [debug] Rendering inline template.
+[Tue Jan 21 00:52:40 2014] [debug] Rendering inline template.
+[Tue Jan 21 00:52:40 2014] [debug] 500 Internal Server Error (0.393682s, 2.540/s).
