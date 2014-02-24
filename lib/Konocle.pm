@@ -159,34 +159,54 @@ sub setup_routes {
     my $self = shift;
     my $r = $self->routes;
 
-    # Normal route to controller
+    # Here we are saying that konocle.com accepts GET requests
+    # So, when they go to konocle.com they are GETting the page
+    # http://www.w3schools.com/tags/ref_httpmethods.asp
     $r->get('/')->to('main#index');
+
+
+    # Now, when they register or login they are sending date to the server
+    # (e.g., username / password). That means it is a POST request. I.e., they
+    # are posting data.
     $r->post('/register')->to('main#register');
-    $r->any('/login')->to('main#login');
-    $r->any('/logout')->to('main#logout');
+    $r->post('/login')->to('main#login');
+    $r->post('/logout')->to('main#logout');
+
+    # Searching for something? Again, this is a post request.
     $r->post('/search')->to('search#search');
 
-    # URLS
-    $r->get('/p/:postid')->to('posts#main');
-    $r->post('/u/submit');
+    # Now, how the route works is like this:
+    # to->('main#index') will do this: Check in the lib/Konocle folder for
+    # Main.pm and subroutine index, then do what the subroutine specifies to do.
+    # If no Main.pm exists, or index subroutine does not exist in Main.pm, then
+    # check in templates/main for index.html.ep and render it.
 
+    # Take a look at Main.pm and notice that index is not a subroutine. So, that
+    # means that templates/main/index.html.ep will be rendered. There are no
+    # special things that must be done in a subroutine before rendering the page.
 
+    # Now, notice that Main.pm does have a register subroutine. That's because
+    # we are not just rendering a web page, we are doing things server side.
+    # We are taking the username and password they've used to register and
+    # adding the user to the database.
 
-    # Posts
-    $r->get('/post')->to('posts#new');
-    $r->get('/p/:postid')->to('posts#main');
-    $r->get('/p/submit/:id')->to('posts#main');
+    # After it is done doing that it redirects them to /login. /login as you can
+    # see above goes to main#login, and since there is a login subroutine in Main.pm
+    # what happens is that the login subroutine is executed.
 
-    # Actions
-    $r->get('/a/add/:discipline')->to('actions#add');
+    # Notice that register sends two parameters to login:
+    # $self->redirect_to('/login', username => $username, password => $password);
+    # This means that the person registers, after they've done that they are
+    # redirected to login. The login subroutine takes their username and password,
+    # checks against the database and logs them in. On successful login they are
+    # then redirected back to /  (i.e., main#index, index.html.ep)
 
+    # So, it would look something like this:
+    # Fill out registration form, hit submit. After hitting submit you are then
+    # logged in and sitting back at the main page www.konocle.com.
 
-
-    # Subjects
-    $r->get('/s/:subject')->to('subjects#subject');
-
-    # Profile
-    $r->get('/profile')->to('user#profile');
+    # Now, take a look at register and login subroutines in Main.pm for an
+    # explanation of how they work.
 
 }
 

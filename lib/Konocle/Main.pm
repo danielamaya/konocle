@@ -18,6 +18,16 @@ sub register {
         }
     );
 
+    # my $schema = $self->schema is how we grab our database handle (connection to the database)
+    # We then take the parameters given to use (username, password and email)
+    # and create the entry in the database table users. DBIx::Class takes the plural off a
+    # database table, and capitalizes the first letter. So, if in your database you have
+    # a table called users, DBIx::Class will call it User and you will access it
+    # as User (not users).
+
+    # The above code creates the entry in the database.
+
+    # Now, below we redirect to login with POST paramaters username and password.
     $self->redirect_to('/login', username => $username, password => $password);
 };
 

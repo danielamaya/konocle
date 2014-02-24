@@ -1,0 +1,68 @@
+Humanities
+    Classics
+    History
+    Linguistics
+    Literature
+    Performing Arts
+    Philosophy
+    Religion
+    Visual Arts
+
+Social Sciences
+    Anthropology
+    Archeology
+    Area studies
+    Cultural and Ethnic Studies
+    Economics
+    Gender and Sexuality Studies
+    Geography
+    Political Science
+    Psychology
+    Sociology
+
+Natural Sciences
+    Biology
+    Chemistry
+    Physics
+    Earth Sciences
+
+Formal Sciences
+    Computer Science
+    Information Systems
+    Information Technology
+    Mathematics
+    Statistics
+    System Science
+
+Professions and Applied Sciences
+    Agriculture
+    Architecture
+    Business
+    Education
+    Engineering
+    Environmental Studies and Forestry
+    Family and Consumer Science
+    Healthcare
+    Recreation and Fitness
+    Journalism
+    Law
+    Library Studies
+    Military Science
+    Public Administration
+    Social Work
+    Transportation
+
+Skilled Trades & Services
+    Boilermaker
+    Carpentry
+    Masonry
+    Electrical
+    Upholstery
+    Metal Working
+    Plumbing
+    Welding
+    Cosmetology
+    Culinary Arts
+    Electronics
+    HVAC
+    Automotives
